@@ -1,0 +1,36 @@
+# Environment variables (API keys, tokens)
+.env
+
+# PSK encryption keys
+*.psk.txt
+zabbix_psk.txt
+
+# Chroma vector database (can be rebuilt)
+chroma_db/
+*.chroma
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# Docker credentials (if any)
+docker-compose.override.yml
+*.env.local
+
+# Zabbix PSK files (if you have them in the project)
+**/zabbix_psk.txt
+**/*.psk.txt
+
+# Logs
+*.log

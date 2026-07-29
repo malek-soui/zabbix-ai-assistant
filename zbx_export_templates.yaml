@@ -1,0 +1,580 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: 02e4df4f20b848e79267641790f241da
+      name: Templates/Virtualization
+  host_groups:
+    - uuid: 137f19e6e2dc4219b33553b812627bc2
+      name: 'Virtual machines'
+  templates:
+    - uuid: c45429bff42b4a3cb1388a5834f468b3
+      template: 'VM Metrics Template'
+      name: 'VM Metrics Template'
+      groups:
+        - name: Templates/Virtualization
+      items:
+        - uuid: b5f448f157a6403d8a4aa129a1699297
+          name: 'Assigned Memory (GB)'
+          type: TRAP
+          key: vm.assignedmem
+          value_type: TEXT
+        - uuid: bde2833962f54421b74fe2d3463bc5e2
+          name: 'CPU Usage (%)'
+          type: TRAP
+          key: vm.cpu
+          value_type: FLOAT
+        - uuid: 2ea9d9fc6e844b14810ae1df2a1cf3f6
+          name: 'VM Discovery Data'
+          key: vm.discovery.raw
+          value_type: TEXT
+        - uuid: 962c7662b7274723859a4d6e5cda5277
+          name: 'Fill in:  Name: Disk I/O (ops/sec)'
+          type: TRAP
+          key: vm.diskio
+          value_type: FLOAT
+        - uuid: 62f3b805ec564b9e9aa1f4034514f310
+          name: 'DNS Name'
+          type: TRAP
+          key: vm.dns
+          value_type: TEXT
+        - uuid: d807a660b0284f7a94418f35cf42368d
+          name: Host
+          type: TRAP
+          key: vm.host
+          value_type: TEXT
+        - uuid: b102bb5c6ccb4e7aa698fb36541688a6
+          name: 'IPv4 Address'
+          type: TRAP
+          key: vm.ip
+          value_type: TEXT
+        - uuid: 01839199b50e4aee865f262cb9cd1969
+          name: 'Memory Usage (GB)'
+          type: TRAP
+          key: vm.memgb
+          value_type: FLOAT
+        - uuid: ac328e626a864a63b4e39a5d48699cac
+          name: 'Memory Usage (%)'
+          type: TRAP
+          key: vm.mempct
+          value_type: FLOAT
+        - uuid: 89276094793d4cfa9ee8e01454994599
+          name: Name
+          type: TRAP
+          key: vm.name
+          value_type: TEXT
+        - uuid: 00d19db66169431994e116b4eb8492c7
+          name: 'Network Throughput (Kbps)'
+          type: TRAP
+          key: vm.network
+          value_type: FLOAT
+        - uuid: 2d4288e6117f415ab01191c4f9c4473f
+          name: 'Guest OS'
+          type: TRAP
+          key: vm.os
+          value_type: TEXT
+        - uuid: 7ba0ba95daad49689d5fbd2a65a8729d
+          name: 'Provisioned Space (GB)'
+          type: TRAP
+          key: vm.provisioned
+          value_type: FLOAT
+        - uuid: 1bb1cb372c6544638a08fd375a43bea8
+          name: State
+          type: TRAP
+          key: vm.state
+          value_type: TEXT
+        - uuid: e0473fbddc8948f0a57e75109f057474
+          name: Status
+          type: TRAP
+          key: vm.status
+          value_type: TEXT
+        - uuid: 92c9efc5369942ef9dafe1a2ac5287e9
+          name: 'used Space (GB)'
+          type: TRAP
+          key: vm.used
+          value_type: FLOAT
+        - uuid: 14ea27df53c1444f9f8a595f24d4285e
+          name: vCPU
+          type: TRAP
+          key: vm.vcpu
+      discovery_rules:
+        - uuid: e37a002d9269474a9aa8a2a51f1e4300
+          name: 'Hyper-V VM Discovery'
+          type: DEPENDENT
+          key: vm.discovery
+          item_prototypes:
+            - uuid: c13915d367fa44949ae9397c4bff4dfe
+              name: 'VM {#VMNAME} - Assigned Memory (GB)'
+              type: DEPENDENT
+              key: 'vm.assignedmem[{#VMNAME}]'
+              value_type: FLOAT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.[?(@.name==''{#VMNAME}'')].assigned_memory.first()'
+              master_item:
+                key: vm.discovery.raw
+            - uuid: 3f559bc89c0f4067a99028a70a931c8a
+              name: 'VM {#VMNAME} - CPU Usage (%)'
+              type: DEPENDENT
+              key: 'vm.cpu[{#VMNAME}]'
+              value_type: FLOAT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.[?(@.name==''{#VMNAME}'')].cpu_usage.first()'
+              master_item:
+                key: vm.discovery.raw
+              trigger_prototypes:
+                - uuid: 9eb96dceee344059b1527150daabc987
+                  expression: 'last(/VM Metrics Template/vm.cpu[{#VMNAME}])>80'
+                  name: 'VM {#VMNAME}: High CPU usage'
+                  priority: WARNING
+            - uuid: a87156d4f7364318bb646e65b980c2db
+              name: 'VM {#VMNAME} - DNS Name'
+              type: DEPENDENT
+              key: 'vm.dns[{#VMNAME}]'
+              value_type: TEXT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.[?(@.name==''{#VMNAME}'')].dns_name.first()'
+              master_item:
+                key: vm.discovery.raw
+            - uuid: bed3330359af4d84acebb96877705fc1
+              name: 'VM {#VMNAME} - Host'
+              type: DEPENDENT
+              key: 'vm.host[{#VMNAME}]'
+              value_type: TEXT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.[?(@.name==''{#VMNAME}'')].host.first()'
+              master_item:
+                key: vm.discovery.raw
+            - uuid: 481903cef397446e81c1d2c063f1a55d
+              name: 'VM {#VMNAME} - IPv4 Address'
+              type: DEPENDENT
+              key: 'vm.ip[{#VMNAME}]'
+              value_type: TEXT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.[?(@.name==''{#VMNAME}'')].ipv4_address.first()'
+              master_item:
+                key: vm.discovery.raw
+            - uuid: cd720555fc57468baf8d1a846e0ee41d
+              name: 'VM {#VMNAME} - Memory Usage (GB)'
+              type: DEPENDENT
+              key: 'vm.memgb[{#VMNAME}]'
+              value_type: FLOAT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.[?(@.name==''{#VMNAME}'')].memory_usage_gb.first()'
+              master_item:
+                key: vm.discovery.raw
+            - uuid: 0a8ea411a71a410693073388fba2ddff
+              name: 'VM {#VMNAME} - Memory Usage (%)'
+              type: DEPENDENT
+              key: 'vm.mempct[{#VMNAME}]'
+              value_type: FLOAT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.[?(@.name==''{#VMNAME}'')].memory_usage_pct.first()'
+              master_item:
+                key: vm.discovery.raw
+              trigger_prototypes:
+                - uuid: 9248ab62fff84343993e69daad1f0725
+                  expression: 'last(/VM Metrics Template/vm.mempct[{#VMNAME}])>85'
+                  name: 'VM {#VMNAME}: High memory usage'
+                  priority: WARNING
+            - uuid: e1830ed1c24f4f1e8aa99979613a3125
+              name: 'VM {#VMNAME} - Name'
+              type: DEPENDENT
+              key: 'vm.name[{#VMNAME}]'
+              value_type: TEXT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.[?(@.name==''{#VMNAME}'')].name.first()'
+              master_item:
+                key: vm.discovery.raw
+            - uuid: c43dc83425694065962b9f5d89ea9476
+              name: 'VM {#VMNAME} - Guest OS'
+              type: DEPENDENT
+              key: 'vm.os[{#VMNAME}]'
+              value_type: TEXT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.[?(@.name==''{#VMNAME}'')].guest_os.first()'
+              master_item:
+                key: vm.discovery.raw
+            - uuid: 66ce52a8ee084803b9c01263cd73b7d5
+              name: 'VM {#VMNAME} - Provisioned Space (GB)'
+              type: DEPENDENT
+              key: 'vm.provisioned[{#VMNAME}]'
+              value_type: FLOAT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.[?(@.name==''{#VMNAME}'')].provisioned_space.first()'
+              master_item:
+                key: vm.discovery.raw
+            - uuid: 53f33425815a4f91a28a0a7d2b287534
+              name: 'VM {#VMNAME} - State'
+              type: DEPENDENT
+              key: 'vm.state[{#VMNAME}]'
+              value_type: TEXT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.[?(@.name==''{#VMNAME}'')].state.first()'
+              master_item:
+                key: vm.discovery.raw
+              trigger_prototypes:
+                - uuid: 7c175587dd984a2d9a76007091dff819
+                  expression: 'nodata(/VM Metrics Template/vm.state[{#VMNAME}],10m)=1'
+                  name: 'VM {#VMNAME}: No data received'
+                  priority: HIGH
+                - uuid: 0098940269b54a61ba116b1306ce40f9
+                  expression: 'last(/VM Metrics Template/vm.state[{#VMNAME}])<>"Running"'
+                  name: 'VM {#VMNAME} is not running'
+                  priority: HIGH
+            - uuid: c5090dc622b74876bdee7f03a1836a62
+              name: 'VM {#VMNAME} - Status'
+              type: DEPENDENT
+              key: 'vm.status[{#VMNAME}]'
+              value_type: TEXT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.[?(@.name==''{#VMNAME}'')].status.first()'
+              master_item:
+                key: vm.discovery.raw
+            - uuid: 5b5cc1a3258d4b0bb60e83fd903ea7e9
+              name: 'VM {#VMNAME} - Used Space (GB)'
+              type: DEPENDENT
+              key: 'vm.used[{#VMNAME}]'
+              value_type: FLOAT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.[?(@.name==''{#VMNAME}'')].used_space.first()'
+              master_item:
+                key: vm.discovery.raw
+            - uuid: 3fb7364745ef4cfe82587f4783bc7edb
+              name: 'VM {#VMNAME} - vCPU'
+              type: DEPENDENT
+              key: 'vm.vcpu[{#VMNAME}]'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.[?(@.name==''{#VMNAME}'')].vcpu.first()'
+              master_item:
+                key: vm.discovery.raw
+          trigger_prototypes:
+            - uuid: 4aebbf247261408ca53708fed38e2655
+              expression: '(last(/VM Metrics Template/vm.used[{#VMNAME}])/last(/VM Metrics Template/vm.provisioned[{#VMNAME}]))*100>90'
+              name: 'VM {#VMNAME}: Low disk space'
+              priority: WARNING
+          graph_prototypes:
+            - uuid: 852af331c99544f0878118fa902311ba
+              name: 'VM {#VMNAME} - CPU Usage'
+              yaxismax: '0'
+              graph_items:
+                - color: 1A7C11
+                  calc_fnc: ALL
+                  item:
+                    host: 'VM Metrics Template'
+                    key: 'vm.cpu[{#VMNAME}]'
+            - uuid: a88ec89581be4ea09fc5970645443b78
+              name: 'VM {#VMNAME} - Memory Usage'
+              yaxismax: '0'
+              graph_items:
+                - color: 1A7C11
+                  calc_fnc: ALL
+                  item:
+                    host: 'VM Metrics Template'
+                    key: 'vm.mempct[{#VMNAME}]'
+          host_prototypes:
+            - uuid: 3239bc1b108d42f69d47433a6e5f7188
+              host: '{#VMNAME}'
+              name: '{#VMNAME}'
+              group_links:
+                - group:
+                    name: 'Virtual machines'
+              templates:
+                - name: 'VM Metrics Template'
+          master_item:
+            key: vm.discovery.raw
+          lld_macro_paths:
+            - lld_macro: '{#ASSIGNEDMEM}'
+              path: $.assigned_memory
+            - lld_macro: '{#CPUUSAGE}'
+              path: $.cpu_usage
+            - lld_macro: '{#DNSNAME}'
+              path: $.dns_name
+            - lld_macro: '{#GUESTOS}'
+              path: $.guest_os
+            - lld_macro: '{#HOST}'
+              path: $.host
+            - lld_macro: '{#IPV4}'
+              path: $.ipv4_address
+            - lld_macro: '{#MEMGB}'
+              path: $.memory_usage_gb
+            - lld_macro: '{#MEMPCT}'
+              path: $.memory_usage_pct
+            - lld_macro: '{#PROVISIONED}'
+              path: $.provisioned_space
+            - lld_macro: '{#STATE}'
+              path: $.state
+            - lld_macro: '{#STATUS}'
+              path: $.status
+            - lld_macro: '{#USED}'
+              path: $.used_space
+            - lld_macro: '{#VCPU}'
+              path: $.vcpu
+            - lld_macro: '{#VMNAME}'
+              path: $.name
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return JSON.stringify({data: JSON.parse(value)});'
+      dashboards:
+        - uuid: 417a14766ae44e1d8693c7fdc163ae44
+          name: 'VM Monitoring'
+          pages:
+            - widgets:
+                - type: tophosts
+                  name: 'VM Monitoring'
+                  width: '72'
+                  height: '4'
+                  fields:
+                    - type: STRING
+                      name: columns.0.base_color
+                      value: F0F4C3
+                    - type: INTEGER
+                      name: columns.0.data
+                      value: '1'
+                    - type: INTEGER
+                      name: columns.0.display_value_as
+                      value: '1'
+                    - type: STRING
+                      name: columns.0.item
+                      value: Name
+                    - type: STRING
+                      name: columns.0.name
+                      value: Name
+                    - type: STRING
+                      name: columns.1.base_color
+                      value: F0F4C3
+                    - type: INTEGER
+                      name: columns.1.data
+                      value: '1'
+                    - type: INTEGER
+                      name: columns.1.display_value_as
+                      value: '1'
+                    - type: STRING
+                      name: columns.1.item
+                      value: State
+                    - type: STRING
+                      name: columns.1.name
+                      value: State
+                    - type: STRING
+                      name: columns.2.base_color
+                      value: F0F4C3
+                    - type: INTEGER
+                      name: columns.2.data
+                      value: '1'
+                    - type: INTEGER
+                      name: columns.2.display_value_as
+                      value: '1'
+                    - type: STRING
+                      name: columns.2.item
+                      value: Status
+                    - type: STRING
+                      name: columns.2.name
+                      value: Status
+                    - type: STRING
+                      name: columns.3.base_color
+                      value: F0F4C3
+                    - type: INTEGER
+                      name: columns.3.data
+                      value: '1'
+                    - type: INTEGER
+                      name: columns.3.display_value_as
+                      value: '1'
+                    - type: STRING
+                      name: columns.3.item
+                      value: Host
+                    - type: STRING
+                      name: columns.3.name
+                      value: Host
+                    - type: STRING
+                      name: columns.4.base_color
+                      value: F0F4C3
+                    - type: INTEGER
+                      name: columns.4.data
+                      value: '1'
+                    - type: STRING
+                      name: columns.4.item
+                      value: 'Provisioned Space (GB)'
+                    - type: STRING
+                      name: columns.4.name
+                      value: 'Provisioned (GB)'
+                    - type: STRING
+                      name: columns.5.base_color
+                      value: F0F4C3
+                    - type: INTEGER
+                      name: columns.5.data
+                      value: '1'
+                    - type: STRING
+                      name: columns.5.item
+                      value: 'Used Space (GB)'
+                    - type: STRING
+                      name: columns.5.name
+                      value: 'Used (GB)'
+                    - type: STRING
+                      name: columns.6.base_color
+                      value: F0F4C3
+                    - type: INTEGER
+                      name: columns.6.data
+                      value: '1'
+                    - type: STRING
+                      name: columns.6.item
+                      value: 'CPU Usage (%)'
+                    - type: STRING
+                      name: columns.6.name
+                      value: 'CPU %'
+                    - type: STRING
+                      name: columns.7.base_color
+                      value: F0F4C3
+                    - type: INTEGER
+                      name: columns.7.data
+                      value: '1'
+                    - type: STRING
+                      name: columns.7.item
+                      value: 'Memory Usage (%)'
+                    - type: STRING
+                      name: columns.7.name
+                      value: 'Memory %'
+                    - type: STRING
+                      name: columns.8.base_color
+                      value: F0F4C3
+                    - type: INTEGER
+                      name: columns.8.data
+                      value: '1'
+                    - type: INTEGER
+                      name: columns.8.display_value_as
+                      value: '1'
+                    - type: STRING
+                      name: columns.8.item
+                      value: 'IPv4 Address'
+                    - type: STRING
+                      name: columns.8.name
+                      value: IPv4
+                    - type: STRING
+                      name: columns.9.base_color
+                      value: F0F4C3
+                    - type: INTEGER
+                      name: columns.9.data
+                      value: '1'
+                    - type: INTEGER
+                      name: columns.9.display_value_as
+                      value: '1'
+                    - type: STRING
+                      name: columns.9.item
+                      value: 'DNS Name'
+                    - type: STRING
+                      name: columns.9.name
+                      value: DNS
+                    - type: STRING
+                      name: columns.10.base_color
+                      value: F0F4C3
+                    - type: INTEGER
+                      name: columns.10.data
+                      value: '1'
+                    - type: STRING
+                      name: columns.10.item
+                      value: vCPU
+                    - type: STRING
+                      name: columns.10.name
+                      value: vCPU
+                    - type: STRING
+                      name: columns.11.base_color
+                      value: F0F4C3
+                    - type: INTEGER
+                      name: columns.11.data
+                      value: '1'
+                    - type: STRING
+                      name: columns.11.item
+                      value: 'Assigned Mem (GB)'
+                    - type: STRING
+                      name: columns.11.name
+                      value: 'Assigned Mem (GB)'
+                    - type: STRING
+                      name: columns.12.base_color
+                      value: F0F4C3
+                    - type: INTEGER
+                      name: columns.12.data
+                      value: '1'
+                    - type: INTEGER
+                      name: columns.12.display_value_as
+                      value: '1'
+                    - type: STRING
+                      name: columns.12.item
+                      value: 'Guest OS'
+                    - type: STRING
+                      name: columns.12.name
+                      value: 'Guest OS'
+                    - type: STRING
+                      name: reference
+                      value: MITAO
+                - type: problems
+                  name: 'Active Incidents'
+                  'y': '4'
+                  width: '72'
+                  height: '3'
+                  fields:
+                    - type: STRING
+                      name: reference
+                      value: USIZZ
+                - type: svggraph
+                  name: 'Disk I/O'
+                  'y': '7'
+                  width: '36'
+                  height: '4'
+                  fields:
+                    - type: INTEGER
+                      name: ds.0.color_palette
+                      value: '0'
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: 'Disk I/O'
+                    - type: STRING
+                      name: reference
+                      value: PMRCB
+                    - type: INTEGER
+                      name: righty
+                      value: '0'
+                - type: svggraph
+                  name: 'Network Throughput'
+                  x: '36'
+                  'y': '7'
+                  width: '36'
+                  height: '4'
+                  fields:
+                    - type: INTEGER
+                      name: ds.0.color_palette
+                      value: '0'
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: 'Network Throughput (Kbps)'
+                    - type: STRING
+                      name: reference
+                      value: VJAFG
+                    - type: INTEGER
+                      name: righty
+                      value: '0'
