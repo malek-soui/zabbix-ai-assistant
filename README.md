@@ -1,150 +1,137 @@
-markdown
+# 🚀 Zabbix AI Monitoring Assistant
 
-\# Zabbix AI Monitoring Assistant
+> An intelligent monitoring assistant that combines **Zabbix** with **AI-powered alert analysis** using RAG (Retrieval-Augmented Generation).
 
+---
 
+## 📌 Overview
 
-An intelligent monitoring assistant that combines Zabbix with AI-powered alert analysis using RAG (Retrieval-Augmented Generation).
+This project was developed during an internship to enhance infrastructure monitoring by adding an AI layer that explains alerts, correlates incidents, and generates daily reports.
 
+The system connects to the Zabbix API, retrieves active alerts, enriches them with historical context from a vector database, and uses an LLM to provide **actionable, human-readable explanations**.
 
+---
 
-\## Features
+## ✨ Features
 
+| Feature | Description |
+|---------|-------------|
+| 🔍 **Alert Explanation** | Get AI-generated explanations of Zabbix alerts with possible causes and recommended actions |
+| 🔗 **Alert Correlation** | Automatically detect related alerts on the same host within a time window |
+| 📊 **Daily Summary** | Generate professional daily reports summarizing all problems from the last 24 hours |
+| 💬 **Conversational Assistant** | Ask natural language questions about your infrastructure |
+| 🌍 **Multilingual** | Full support for **French** and **English** — switch with one click |
+| 📡 **Real-time Alerts** | Sidebar shows live Zabbix alerts with severity color coding |
 
+---
 
-\- \*\*Alert Explanation\*\* — Get AI-generated explanations of Zabbix alerts
-
-\- \*\*Alert Correlation\*\* — Find related alerts on the same host
-
-\- \*\*Daily Summary\*\* — Generate professional daily reports
-
-\- \*\*Conversational Assistant\*\* — Chat with an AI about your infrastructure
-
-\- \*\*Multilingual\*\* — Switch between French and English
-
-
-
-\## Architecture
-
-
-
-```
-
-Zabbix API → Python (RAG) → Groq LLM → Streamlit UI
-
-&#x20;               ↓
-
-&#x20;          Chroma Vector DB
+## 🏗️ Architecture
 
 ```
-
-
-
-\## Project Structure
-
-
-
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│  Zabbix API ──► Python (RAG) ──► Groq LLM ──► Streamlit UI │
+│                     │                                       │
+│                     ▼                                       │
+│              Chroma Vector DB                              │
+│         (Similar Past Incidents)                           │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-├── app.py                    # Streamlit web interface
+---
 
-├── explain\_alert.py          # Single alert explanation
-
-├── daily\_summary.py          # Daily summary generator
-
-├── alert\_correlation.py      # Alert correlation engine
-
-├── build\_vectorstore.py      # Build Chroma DB
-
-├── incidents.py              # Fake incident knowledge base
-
-├── vm\_discovery.ps1          # PowerShell script for Hyper-V
-
-├── zbx\_export\_templates.yaml # Zabbix template export
-
-├── requirements.txt          # Python dependencies
-
-└── README.md                 # This file
+## 📁 Project Structure
 
 ```
+📂 zabbix-ai-assistant/
+├── 📄 app.py                    # Streamlit web interface
+├── 📄 explain_alert.py          # Single alert explanation
+├── 📄 daily_summary.py          # Daily summary report
+├── 📄 alert_correlation.py      # Alert correlation engine
+├── 📄 build_vectorstore.py      # Build Chroma vector database
+├── 📄 incidents.py              # Fake incident knowledge base
+├── 📄 vm_discovery.ps1          # PowerShell script for Hyper-V VM discovery
+├── 📄 zbx_export_templates.yaml # Zabbix template export (ready to import)
+├── 📄 requirements.txt          # Python dependencies
+├── 📄 .gitignore                # Ignore secrets
+└── 📄 README.md                 # Project documentation
+```
 
+---
 
+## 🚀 Quick Start
 
-\## Setup
+### 1. Clone the repository
 
+```bash
+git clone https://github.com/malek-soui/zabbix-ai-assistant.git
+cd zabbix-ai-assistant
+```
 
+### 2. Create a `.env` file with your credentials
 
-1\. Clone the repository:
+```
+ZABBIX_URL=http://localhost/api_jsonrpc.php
+ZABBIX_API_TOKEN=your_zabbix_api_token
+GROQ_API_KEY=your_groq_api_key
+```
 
-&#x20;  ```bash
+> **Note:** If your Zabbix server is running on a different host, replace `localhost` with the appropriate IP or hostname.
 
-&#x20;  git clone https://github.com/malek-soui/zabbix-ai-assistant.git
+### 3. Install dependencies
 
-&#x20;  cd zabbix-ai-assistant
+```bash
+pip install -r requirements.txt
+```
 
-&#x20;  ```
+### 4. Build the vector store
 
+```bash
+python build_vectorstore.py
+```
 
+### 5. Run the application
 
-2\. Create a `.env` file with your credentials:
+```bash
+streamlit run app.py
+```
 
-&#x20;  ```
+The app will open automatically at [http://localhost:8501](http://localhost:8501)
 
-&#x20;  ZABBIX\_URL=http://your-zabbix-server/api\_jsonrpc.php
+---
 
-&#x20;  ZABBIX\_API\_TOKEN=your\_zabbix\_api\_token
+## 📋 Prerequisites
 
-&#x20;  GROQ\_API\_KEY=your\_groq\_api\_key
+| Requirement | Details |
+|-------------|---------|
+| **Zabbix** | Version 7.4+ with API access enabled |
+| **Groq API** | Free tier available at [groq.com](https://groq.com) |
+| **Python** | Version 3.10 or higher |
+| **Docker** | For running the Zabbix containers (optional) |
 
-&#x20;  ```
+---
 
+## 🛠️ Technologies Used
 
+| Technology | Purpose |
+|------------|---------|
+| 🐍 **Python** | Core programming language |
+| 📊 **Zabbix** | Monitoring infrastructure and data source |
+| 🤖 **Groq LLM** | AI model for generating explanations |
+| 📚 **Chroma DB** | Vector database for RAG (similar past incidents) |
+| 🎨 **Streamlit** | Web interface framework |
+| 🔧 **PowerShell** | Hyper-V VM discovery script |
 
-3\. Install dependencies:
+---
 
-&#x20;  ```bash
+## 📬 Contact
 
-&#x20;  pip install -r requirements.txt
+**Malek Soui**  
+[LinkedIn]([[https://www.linkedin.com/in/malek-soui-88b8a9388/]) 
 
-&#x20;  ```
+---
 
+## ⭐ Show Your Support
 
-
-4\. Build the vector store:
-
-&#x20;  ```bash
-
-&#x20;  python build\_vectorstore.py
-
-&#x20;  ```
-
-
-
-5\. Run the app:
-
-&#x20;  ```bash
-
-&#x20;  streamlit run app.py
-
-&#x20;  ```
-
-
-
-\## Prerequisites
-
-
-
-\- Zabbix 7.4+ (with API access)
-
-\- Groq API key (free tier available)
-
-\- Python 3.10+
-
-
-
-\## License
-
-
-
-This project was created during an internship and is for demonstration purposes.
-
+If you found this project useful, give it a ⭐ on GitHub!
