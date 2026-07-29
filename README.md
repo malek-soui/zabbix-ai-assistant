@@ -125,11 +125,6 @@ The app will open automatically at [http://localhost:8501](http://localhost:8501
 
 ---
 
-## 📬 Contact
-
-**Malek Soui**  
-[LinkedIn]([[https://www.linkedin.com/in/malek-soui-88b8a9388/]) 
-
 ---
 
 ## ⭐ Show Your Support
