@@ -108,7 +108,7 @@ Using the alert details and any relevant similar past incidents, provide:
 
 Keep it concise and practical."""
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         messages=[{"role": "user", "content": prompt}]
     )
 

@@ -102,7 +102,7 @@ Write a concise daily summary report with:
 Keep it professional and concise, like something you'd paste into a report or send in a status update."""
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         messages=[{"role": "user", "content": prompt}]
     )
 
